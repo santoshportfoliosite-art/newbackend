@@ -4,9 +4,32 @@ import { AdminUser } from "../models/AdminUser.js";
 import { env } from "../config/env.js";
 import ApiError from "../utils/ApiError.js";
 
-/**
- * Attempt admin login, returning { admin, token, cookieOptions }
- */
+function cookieBaseOptions() {
+  const samesite =
+    (env.COOKIE_SAMESITE || "").toLowerCase() === "none" ? "none" : "lax";
+  const secure =
+    (env.COOKIE_SAMESITE || "").toLowerCase() === "none"
+      ? true // SameSite=None requires Secure
+      : env.NODE_ENV === "production" || String(env.COOKIE_SECURE) === "true";
+
+  return {
+    httpOnly: true,
+    sameSite: samesite,
+    secure,
+    path: "/"
+  };
+}
+
+function parseJwtExpiryToMs(exp) {
+  if (!exp) return 7 * 24 * 60 * 60 * 1000;
+  if (/^\d+$/.test(exp)) return parseInt(exp, 10) * 1000;
+  const m = /^(\d+)([smhd])$/.exec(exp);
+  const n = parseInt(m?.[1] || "7", 10);
+  const u = m?.[2] || "d";
+  const map = { s: 1000, m: 60 * 1000, h: 3600 * 1000, d: 24 * 3600 * 1000 };
+  return n * map[u];
+}
+
 export async function login(email, password) {
   const admin = await AdminUser.findOne({ email: String(email).toLowerCase() });
   if (!admin) throw ApiError.unauthorized("Incorrect email");
@@ -19,9 +42,7 @@ export async function login(email, password) {
   });
 
   const cookieOptions = {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: env.NODE_ENV === "production",
+    ...cookieBaseOptions(),
     maxAge: parseJwtExpiryToMs(env.JWT_EXPIRES_IN)
   };
 
@@ -32,7 +53,6 @@ export async function login(email, password) {
   };
 }
 
-/** Verify JWT and return admin (or throw) */
 export async function verifyToken(token) {
   try {
     const payload = jwt.verify(token, env.JWT_SECRET);
@@ -44,14 +64,6 @@ export async function verifyToken(token) {
   }
 }
 
-/** Helper: parse "7d" / "24h" / seconds to ms */
-function parseJwtExpiryToMs(exp) {
-  if (!exp) return 7 * 24 * 60 * 60 * 1000;
-  if (/^\d+$/.test(exp)) return parseInt(exp, 10) * 1000;
-  const m = /^(\d+)([smhd])$/.exec(exp);
-  if (!m) return 7 * 24 * 60 * 60 * 1000;
-  const n = parseInt(m[1], 10);
-  const unit = m[2];
-  const map = { s: 1000, m: 60 * 1000, h: 3600 * 1000, d: 24 * 3600 * 1000 };
-  return n * map[unit];
+export function cookieClearOptions() {
+  return cookieBaseOptions();
 }
