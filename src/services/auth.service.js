@@ -5,23 +5,17 @@ import { env } from "../config/env.js";
 import ApiError from "../utils/ApiError.js";
 
 function cookieBaseOptions() {
-  const samesite =
-    (env.COOKIE_SAMESITE || "").toLowerCase() === "none" ? "none" : "lax";
-  const secure =
-    (env.COOKIE_SAMESITE || "").toLowerCase() === "none"
-      ? true // SameSite=None requires Secure
-      : env.NODE_ENV === "production" || String(env.COOKIE_SECURE) === "true";
-
+  const isProd = env.NODE_ENV === "production";
   return {
     httpOnly: true,
-    sameSite: samesite,
-    secure,
+    sameSite: isProd ? "None" : "Lax",
+    secure: isProd, // SameSite=None requires Secure
     path: "/"
   };
 }
 
 function parseJwtExpiryToMs(exp) {
-  if (!exp) return 7 * 24 * 60 * 60 * 1000;
+  if (!exp) return 7 * 24 * 60 * 60 * 1000; // default 7 days
   if (/^\d+$/.test(exp)) return parseInt(exp, 10) * 1000;
   const m = /^(\d+)([smhd])$/.exec(exp);
   const n = parseInt(m?.[1] || "7", 10);
