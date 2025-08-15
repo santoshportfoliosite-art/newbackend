@@ -15,13 +15,25 @@ import apiRouter from "./routes/index.js";
 
 const app = express();
 
+/** ✅ Needed for Secure cookies behind Render/Netlify/NGINX proxies */
+app.set("trust proxy", 1);
+
 // Security & utils
-app.use(helmet());
+app.use(
+  helmet({
+    // If you serve cross-origin assets, consider disabling CORP:
+    // crossOriginResourcePolicy: false
+  })
+);
 app.use(compression());
+
+/** ✅ CORS with credentials BEFORE routes */
+app.use(cors(corsOptions));
+
 app.use(cookieParser());
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cors(corsOptions));
+
 if (env.NODE_ENV !== "production") app.use(morgan("dev"));
 
 // Health check

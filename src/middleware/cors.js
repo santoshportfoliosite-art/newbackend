@@ -1,20 +1,24 @@
 import { env } from "../config/env.js";
 
-const allowlist = new Set([
+const allowList = [
   env.CLIENT_ORIGIN,
-  ...(env.CORS_ALLOWED_ORIGINS || [])
-].filter(Boolean));
+  ...(env.CORS_ALLOWED_ORIGINS
+    ? env.CORS_ALLOWED_ORIGINS.split(",").map(s => s.trim())
+    : [])
+].filter(Boolean);
 
+/**
+ * - Allows requests from `CLIENT_ORIGIN` and any in `CORS_ALLOWED_ORIGINS`
+ * - Sends credentials (cookies) for cross-origin requests
+ */
 export const corsOptions = {
-  origin(origin, callback) {
-    // Allow non-browser clients (curl/postman) with no origin
-    if (!origin || allowlist.has(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  origin(origin, cb) {
+    // Allow server-to-server/no-origin tools and exact allow-list matches
+    if (!origin || allowList.includes(origin)) return cb(null, true);
+    return cb(new Error(`CORS blocked for ${origin}`));
   },
   credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  optionsSuccessStatus: 200
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Set-Cookie"]
 };
