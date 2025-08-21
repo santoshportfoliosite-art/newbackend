@@ -36,11 +36,22 @@ app.use(express.urlencoded({ extended: true }));
 
 if (env.NODE_ENV !== "production") app.use(morgan("dev"));
 
-/* [ADD] Extra health endpoint commonly used by uptime pingers/warmers */
-app.get("/health", (_req, res) => res.status(200).json({ ok: true, ts: Date.now() }));
+/* [ADD] Per-route open CORS for health endpoints (no credentials).
+   This avoids CORS errors when your frontend (or pingers) hit /health from another origin. */
+const openCors = cors({ origin: true, credentials: false });
 
-// Existing health check
-app.get("/healthz", (_req, res) => res.status(200).json({ ok: true }));
+/* [MODIFIED with openCors + header] Extra health endpoint commonly used by uptime pingers/warmers */
+app.get("/health", openCors, (_req, res) => {
+  // Explicit wildcard since no credentials are used on this route
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.status(200).json({ ok: true, ts: Date.now() });
+});
+
+// Existing health check (kept) with open CORS as well
+app.get("/healthz", openCors, (_req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.status(200).json({ ok: true });
+});
 
 /* [ADD] Prevent stale/empty cached API responses through CDNs/proxies.
    Safe: headers only, does NOT alter handler logic or responses. */
