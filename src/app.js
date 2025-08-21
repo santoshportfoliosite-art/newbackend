@@ -36,8 +36,22 @@ app.use(express.urlencoded({ extended: true }));
 
 if (env.NODE_ENV !== "production") app.use(morgan("dev"));
 
-// Health check
+/* [ADD] Extra health endpoint commonly used by uptime pingers/warmers */
+app.get("/health", (_req, res) => res.status(200).json({ ok: true, ts: Date.now() }));
+
+// Existing health check
 app.get("/healthz", (_req, res) => res.status(200).json({ ok: true }));
+
+/* [ADD] Prevent stale/empty cached API responses through CDNs/proxies.
+   Safe: headers only, does NOT alter handler logic or responses. */
+app.use("/api", (req, res, next) => {
+  // No-store for GETs; also fine for others
+  res.setHeader("Cache-Control", "no-store");
+  // Helpful when traversing multiple proxies
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
+  next();
+});
 
 // API
 app.use("/api", apiRouter);
