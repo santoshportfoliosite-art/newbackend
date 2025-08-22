@@ -2,7 +2,7 @@
 import fetch from "node-fetch"; 
 
 
-const APP_URL = process.env.APP_URL || "https://newbackend-eigk.onrender.com";
+const APP_URL = process.env.APP_URL || "https://newbackend-eigk.onrender.com/health";
 
 
 export function startStayAwake() {
