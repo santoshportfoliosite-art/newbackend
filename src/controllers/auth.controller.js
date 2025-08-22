@@ -6,7 +6,7 @@ export const login = asyncHandler(async (req, res) => {
   const { email, password } = validate(schemas.login, req.body);
   const { admin, token, cookieOptions } = await loginSvc(email, password);
 
-  // set HTTP-only cookie and also return token for non-browser clients
+  
   res.cookie("token", token, cookieOptions);
   res.status(200).json({
     success: true,

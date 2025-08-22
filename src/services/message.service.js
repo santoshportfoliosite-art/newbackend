@@ -6,10 +6,9 @@ import { env } from "../config/env.js";
 export async function createMessage({ name, email, message }) {
   const doc = await Message.create({ name, email, message, status: "unread" });
 
-  // Fire-and-forget style notifications (await individually to capture results)
+  
   const t = templates();
 
-  // 1) Acknowledgement to sender
   try {
     const { subject, text, html } = t.senderAcknowledgement({ name });
     await sendMail({ to: email, subject, text, html });
@@ -17,7 +16,7 @@ export async function createMessage({ name, email, message }) {
     console.warn("Ack email failed:", e?.message || e);
   }
 
-  // 2) Notification to admin inbox (SMTP_USER)
+
   try {
     const { subject, text, html } = t.adminNotification({ name });
     await sendMail({ to: env.SMTP_USER, subject, text, html });
@@ -25,7 +24,7 @@ export async function createMessage({ name, email, message }) {
     console.warn("Admin email failed:", e?.message || e);
   }
 
-  // 3) Twilio alert to OWNER_NUMBER
+
   try {
     await sendOwnerAlert({
       to: env.OWNER_NUMBER,

@@ -9,13 +9,13 @@ function cookieBaseOptions() {
   return {
     httpOnly: true,
     sameSite: isProd ? "None" : "Lax",
-    secure: isProd, // SameSite=None requires Secure
+    secure: isProd, 
     path: "/"
   };
 }
 
 function parseJwtExpiryToMs(exp) {
-  if (!exp) return 7 * 24 * 60 * 60 * 1000; // default 7 days
+  if (!exp) return 7 * 24 * 60 * 60 * 1000; 
   if (/^\d+$/.test(exp)) return parseInt(exp, 10) * 1000;
   const m = /^(\d+)([smhd])$/.exec(exp);
   const n = parseInt(m?.[1] || "7", 10);

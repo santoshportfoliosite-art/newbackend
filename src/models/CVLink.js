@@ -7,5 +7,5 @@ const cvLinkSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Singleton-style usage.
+
 export const CVLink = mongoose.model("CVLink", cvLinkSchema);

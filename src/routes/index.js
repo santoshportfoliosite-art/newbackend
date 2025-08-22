@@ -13,15 +13,15 @@ import messagesRoutes from "./messages.routes.js";
 
 const router = Router();
 
-// Optional top-level limiter
+
 router.use(apiLimiter);
 
-// Base
+
 router.get("/", (_req, res) => {
   res.json({ message: "Portfolio API up" });
 });
 
-// Mount features
+
 router.use("/auth", authRoutes);
 router.use("/about", aboutRoutes);
 router.use("/projects", projectsRoutes);

@@ -1,13 +1,11 @@
 import { sendMail as send } from "../config/mail.js";
 
-/**
- * Send an email. Minimal wrapper to keep a single import for controllers.
- */
+
 export async function sendMail({ to, subject, text, html }) {
   return send({ to, subject, text, html });
 }
 
-/** Ready-made templates */
+
 export function templates() {
   return {
     senderAcknowledgement: ({ name }) => ({

@@ -14,5 +14,5 @@ const contactInfoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Treat this as a singleton document as well.
+
 export const ContactInfo = mongoose.model("ContactInfo", contactInfoSchema);

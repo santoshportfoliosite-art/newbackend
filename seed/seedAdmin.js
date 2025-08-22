@@ -5,7 +5,7 @@ import { AdminUser } from "../src/models/AdminUser.js";
 
 async function run() {
   if (!env.SEED_ADMIN_EMAIL || !env.SEED_ADMIN_PASSWORD) {
-    console.error("❌ Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in your .env first.");
+    console.error("Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in your .env first.");
     process.exit(1);
   }
 
@@ -15,7 +15,7 @@ async function run() {
 
     let user = await AdminUser.findOne({ email });
     if (user) {
-      console.log(`ℹ️ Admin already exists: ${email}`);
+      console.log(`ℹAdmin already exists: ${email}`);
     } else {
       const passwordHash = await bcrypt.hash(
         env.SEED_ADMIN_PASSWORD,

@@ -13,7 +13,7 @@ export function validate(schema, payload) {
   return value;
 }
 
-/* Reusable schemas (optional helpers) */
+
 export const schemas = {
   login: Joi.object({
     email: Joi.string().email().required(),

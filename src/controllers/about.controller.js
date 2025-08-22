@@ -20,9 +20,9 @@ export const updateAbout = asyncHandler(async (req, res) => {
 
   const about = await getOrCreate();
 
-  // Replace image if a new file is provided
+  
   if (file?.buffer) {
-    // delete old if exists
+  
     if (about.image?.public_id) await removeCover(about.image.public_id);
     const uploaded = await uploadCover(file.buffer, "portfolio/about");
     about.image = uploaded;

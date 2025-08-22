@@ -11,5 +11,5 @@ const aboutSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Optional: enforce singleton by always using the first document
+
 export const About = mongoose.model("About", aboutSchema);

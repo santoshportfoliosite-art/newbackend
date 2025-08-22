@@ -30,7 +30,7 @@ export const env = {
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-  CLOUDINARY_URL: process.env.CLOUDINARY_URL, // optional single URL
+  CLOUDINARY_URL: process.env.CLOUDINARY_URL, 
 
   // Mail
   SMTP_HOST: required("SMTP_HOST"),
